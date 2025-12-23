@@ -1,0 +1,40 @@
+name: Build EmergencySOS APK
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1️⃣ Checkout repository
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      # 2️⃣ Install system dependencies
+      - name: Install System Dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y python3-pip python3-setuptools zip unzip openjdk-17-jdk git
+
+      # 3️⃣ Install Python packages
+      - name: Install Python Packages
+        run: |
+          pip install --upgrade pip
+          pip install buildozer cython
+
+      # 4️⃣ Build APK
+      - name: Build APK with Buildozer
+        run: |
+          # Assuming buildozer.spec is in the repo root
+          buildozer android debug
+
+      # 5️⃣ Upload APK as artifact
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: EmergencySOS-APK
+          path: bin/*.apk
